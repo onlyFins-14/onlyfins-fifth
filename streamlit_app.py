@@ -5,8 +5,20 @@ import numpy as np
 import math
 import time
 
+import streamlit as st
+import tempfile
+
 # import for blynk
 import BlynkLib
+
+# title of web
+st.title("OnlyFins")
+
+# placeholder of video
+frame_placeholder = st.empty()
+
+# stop button
+stop_btn_pressed = st.button("stop")
 
 BLYNK_AUTH = 'gvoIwiZ41DCdq0_rW2LE68oWw8yYR5Ks'
 # initialize Blynk
@@ -35,8 +47,8 @@ classNames = ["gasping_catfish"]
 stream_url = "https://9379-49-150-45-78.ngrok-free.app/mjpeg/1"
 
 # Load video stream
-cap = cv2.VideoCapture(stream_url)
-# cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(stream_url)
+cap = cv2.VideoCapture(0)
 
 # Initialize gasping catfish total
 gasping_catfish_estimation = 0
@@ -86,64 +98,13 @@ def v3_write_handler(value):
     global catfish_total
     catfish_total = value[0]
 
-# def interval_func():
-#     global duration, duration_stop
-#     if aerator_operation == 0: # Automatic Mode
-#         # print(aerator_operation)
-#         # Automatic control
-#         if gasping_catfish_estimation > 30:
-#             # Send command to Arduino to activate the relay and start aerator
-#             blynk.virtual_write(1, 1)
-#             # arduino.write(b'1')
-#         elif gasping_catfish_estimation == 0:
-#             # Send command to Arduino to stop the aerator
-#             blynk.virtual_write(1, 0)
-#             # arduino.write(b'0')
-#
-#     elif aerator_operation == 1: # 3 Hours mode
-#         # arduino.write(b'1')
-#         blynk.virtual_write(1, 1)
-#         time.sleep(duration)
-#         # Down-time duration
-#         duration_stop = 10800
-#         # arduino.write(b'0')
-#         blynk.virtual_write(1, 0)
-#         time.sleep(duration_stop)
-#
-#     elif aerator_operation == 2: # 6 Hours mode
-#         # arduino.write(b'1')
-#         blynk.virtual_write(1, 1)
-#         time.sleep(duration)
-#         # Down-time duration
-#         duration_stop = 21600
-#         # arduino.write(b'0')
-#         blynk.virtual_write(1, 0)
-#         time.sleep(duration_stop)
-#
-#     elif aerator_operation == 3: # 8 Hours mode
-#         # arduino.write(b'1')
-#         blynk.virtual_write(1, 1)
-#         time.sleep(duration)
-#         # Down-time duration
-#         duration_stop = 28800
-#         # arduino.write(b'0')
-#         blynk.virtual_write(1, 0)
-#         time.sleep(duration_stop)
-#
-#     elif aerator_operation == 4: # Manual mode
-#         # Turn on aerator
-#         if aerator_status == 0:
-#             # blynk.virtual_write(1, 0)
-#             pass
-#             # arduino.write(b'0')
-#         # Turn off aerator
-#         elif aerator_status == 1:
-#             # blynk.virtual_write(1, 1)
-#             pass
-#             # arduino.write(b'1')
 
-while True:
+while True and not stop_btn_pressed:
     ret, frame = cap.read()
+
+    if not ret:
+        st.write("The video stopped")
+        break
 
     results = model(frame, stream=True, conf=0.25)
 
@@ -254,11 +215,12 @@ while True:
             # continue
             # arduino.write(b'1')
 
+    frame_placeholder.image(frame, channels="RGB")
     # cv2.imshow('OnlyFins', frame)
 
     # Break the loop on 'q' key press
-    # if cv2.waitKey(1) & 0xFF == ord('q'):
-    #     break
+    if cv2.waitKey(1) & 0xFF == ord('q') or stop_btn_pressed:
+        break
 
     # ------------------------------------------------------------------------------------------------------------------------------------------------------ #
     # START OF BLYNK PROCESS
@@ -272,5 +234,5 @@ while True:
         tmr_start_time += 1
 
 # Release resources
-# cap.release()
-# cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()
