@@ -1,0 +1,6 @@
+blynklib==0.2.6
+cvlib==0.2.7
+numpy==1.24.4
+ultralytics==8.0.218
+urllib3==2.0.3
+opencv-python-headless
