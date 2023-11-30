@@ -44,11 +44,11 @@ classNames = ["gasping_catfish"]
 # stream_url = "http://192.168.1.140:81/stream?source=sensor" # via internet
 # stream_url = "http://192.168.1.140:81/stream" # via web server
 # stream_url = "http://192.168.1.140/mjpeg/1" # via multiple client
-stream_url = "https://9379-49-150-45-78.ngrok-free.app/mjpeg/1"
+stream_url = "https://cd10-49-150-33-78.ngrok-free.app/mjpeg/1"
 
 # Load video stream
-# cap = cv2.VideoCapture(stream_url)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(stream_url)
+# cap = cv2.VideoCapture(0)
 
 # Initialize gasping catfish total
 gasping_catfish_estimation = 0
